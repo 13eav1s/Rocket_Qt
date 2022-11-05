@@ -25,47 +25,35 @@ void Counting::CalculateTrajectoryCalk(InputBlock values) {
         err_down.push_back(graph[i] - error[i]);
     }
     err_down.back().y = 0;
-    //Вывод в окно Угла при котором ракета прилетит в заданную точку
-//    labelAlpha->Text = "Alpha = " + (textBoxAngle->Text);
-//Вывод в окно дальности полета
-//    labelXmax->Text = "X = " + Math::Round(graph[graph.size() - 1].x, 3).ToString();
-//  TOD O: Надо как то вывести этот угол и дальность полета
 
     //Переменная для сравнения максимального элемента в цикле
     double ymax = 0;
-    //Цикл для нахождения максимального элемента в Vector
-    //    for each(phase var in graph)
-//    if (ymax < var.y)
-//        ymax = var.y;
+    //  Цикл для нахождения максимального элемента в Vector
     for (auto &var: graph) {
         if (ymax < var.y) {
             ymax = var.y;
         }
     }
 
-//    //Рисование графика полета ракеты с помощью chart
+//  Вывод точек траектории полета ракеты
     for (auto & coord : graph) {
         std::cout << coord.x << ' ' << coord.y << std::endl;
     }
-//    {
-//        //Передача значений в объект типа chart
-//        chart1->Series["Rocket"]->Points->AddXY(graph[i].x, graph[i].y);//Значение Х У
-//    }
-//    for (int i = 0; i < size; i++)
-//    {
-//        //Передача значений в объект типа chart
-//        chart1->Series["Rocket"]->Points->AddXY(graph[i].x, err_down[i].y);//Значение Х У
-//    }
-//    for (int i = 0; i < size; i++)
-//    {
-//        //Передача значений в объект типа chart
-//        chart1->Series["Rocket"]->Points->AddXY(graph[i].x, err_up[i].y);//Значение Х У
-//    }
-//  TOD O: Так как чарта нет нужно вывести значения в консоль и построить график в EXCEL
+}
 
 
-//Вывод максимальной высоты при полете с округлением до тысячных
-//    labelYmax->Text = "Y max = " + Math::Round(ymax, 3).ToString();
+void Counting::CalculateTrajectoryAngle(InputBlock values) {
+    Counting ee;
+    inverse data_max = ee.FindMax(values);
+    data_target = ee.findAlphaInv(values, data_max.angle);
+
+    //Передача значений из класса counting метода Coordinates в вектор graph
+    QVector <phase> graph = ee.Coordinates(values, data_target.angle);
+    //Вывод графика полета ракеты
+    for (auto & coord : graph)
+        //Передача значений в объект типа chart
+        std::cout << coord.x << ' ' << coord.y << std::endl;
+
 }
 
 
@@ -168,26 +156,26 @@ inverse Counting::FindMax(InputBlock values) const {
 }
 
 //  метод деления пополам
-inverse Counting::findAlphaInv(InputBlock values, double x, double alpha_max, bool high) const {
+inverse Counting::findAlphaInv(InputBlock values, double alpha_max) const {
     double a = 0, b = 90;
-    if (high)
+    if (values.low_high_trajectory)
         a = alpha_max;
     else
         b = alpha_max;
 
     double mid = (a + b) / 2;
 
-    double diff_b = (b) - x;
-    double diff_mid = FlyLength(values, mid) - x;
+    double diff_b = (b) - values.x;
+    double diff_mid = FlyLength(values, mid) - values.x;
     while (b - a > prec) {
         if (diff_b * diff_mid < 0)
             a = mid;
         else {
             b = mid;
-            diff_b = FlyLength(values, b) - x;
+            diff_b = FlyLength(values, b) - values.x;
         }
         mid = (a + b) / 2;
-        diff_mid = FlyLength(values, mid) - x;
+        diff_mid = FlyLength(values, mid) - values.x;
     }
 
     QVector<phase> p = Coordinates(values, mid);

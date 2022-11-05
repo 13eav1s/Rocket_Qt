@@ -11,6 +11,8 @@
 #include "numeric.h"
 #include "inverse.h"
 
+#include "mainwindow.h"
+
 #ifndef ROCKET_REBASE_COUNTING_H
 #define ROCKET_REBASE_COUNTING_H
 //#define _USE_MATH_DEFINES
@@ -24,16 +26,19 @@ public:
     const double dt2d2 = dt * dt / 2;
     const double prec = 0.1; // точность для обратной задачи
     const double phi = (1.0 + sqrt(5)) / 2;
+    inverse data_target = {0, 0, 0};
 
-    static void CalculateTrajectoryCalk(InputBlock values);
+    void CalculateTrajectoryCalk(InputBlock values);
 
-    QVector<phase> Coordinates(InputBlock values, double angle = -1, double step = -1) const;
+    void CalculateTrajectoryAngle(InputBlock values);
 
-    QVector<phase> Error(InputBlock values, double angle = -1) const;
+    [[nodiscard]] QVector<phase> Coordinates(InputBlock values, double angle = -1, double step = -1) const;
 
-    double FlyLength(InputBlock values, double angle) const;
+    [[nodiscard]] QVector<phase> Error(InputBlock values, double angle = -1) const;
 
-    inverse FindMax(InputBlock values) const;
+    [[nodiscard]] double FlyLength(InputBlock values, double angle) const;
 
-    inverse findAlphaInv(InputBlock values, double x, double alpha_max, bool high) const;
+    [[nodiscard]] inverse FindMax(InputBlock values) const;
+
+    [[nodiscard]] inverse findAlphaInv(InputBlock values, double alpha_max) const;
 };

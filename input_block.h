@@ -18,5 +18,7 @@ public:
     double mass;
     double mass_fuel;
     double length;
+    double x;
+    bool low_high_trajectory;
 };
 
